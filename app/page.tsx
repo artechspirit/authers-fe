@@ -9,6 +9,7 @@ import { clearAccessToken, setAccessToken } from "@/lib/auth";
 function Home() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [loadingLogout, setLoadingLogout] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -24,14 +25,17 @@ function Home() {
   }, [router]);
 
   const handleLogout = async () => {
+    setLoadingLogout(true);
     try {
       const res = await api.post("/auth/logout");
 
       if (res.status === 200) {
+        setLoadingLogout(false);
         router.push("/login");
         clearAccessToken(); // Clear the access token from the browser
       }
     } catch (error) {
+      setLoadingLogout(false);
       console.error("error", error);
     }
   };
@@ -48,7 +52,9 @@ function Home() {
         <p className="mb-6">
           Email: <span className="font-mono">{user?.email}</span>
         </p>
-        <Button onClick={handleLogout}>Logout</Button>
+        <Button disabled={loadingLogout} onClick={handleLogout}>
+          {loadingLogout ? "Logging out..." : "Logout"}
+        </Button>
       </div>
     </main>
   );

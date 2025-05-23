@@ -11,17 +11,21 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const res = await api.post("/auth/login", { email, password });
       setAccessToken(res.data.accessToken);
+      setLoading(false);
       router.push("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login gagal");
+      setLoading(false);
     }
   };
 
@@ -53,7 +57,9 @@ export default function Login() {
             error={error && !password ? error : ""}
           />
           {error && <p className="mb-4 text-center text-red-600">{error}</p>}
-          <Button type="submit">Login</Button>
+          <Button disabled={loading} type="submit">
+            {loading ? "Loading..." : "Login"}
+          </Button>
         </form>
         <Button className="mt-2" onClick={handleRegister}>
           Register

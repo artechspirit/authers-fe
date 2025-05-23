@@ -10,16 +10,21 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       await api.post("/auth/register", { email, password });
+      setLoading(false);
       alert("Akun berhasil dibuat, silahkan login");
+      setLoading(false);
       router.push("/login");
     } catch (err: any) {
+      setLoading(false);
       setError(err.response?.data?.message || "Terjadi kesalahan");
     }
   };
@@ -52,7 +57,9 @@ export default function Register() {
             error={error && !password ? error : ""}
           />
           {error && <p className="mb-4 text-center text-red-600">{error}</p>}
-          <Button type="submit">Register</Button>
+          <Button disabled={loading} type="submit">
+            {loading ? "Loading..." : "Register"}
+          </Button>
         </form>
         <Button className="mt-2" onClick={handleLogin}>
           Login
