@@ -18,9 +18,6 @@ export default function Login() {
 
     try {
       const res = await api.post("/auth/login", { email, password });
-      api.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${res.data.accessToken}`;
       setAccessToken(res.data.accessToken);
       router.push("/");
     } catch (err: any) {
